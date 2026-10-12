@@ -1,0 +1,24 @@
+name: Django checks
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Check Django and migrations
+        run: |
+          python manage.py check --settings=perfumestore.test_settings
+          python manage.py makemigrations --check --dry-run --settings=perfumestore.test_settings
+      - name: Test
+        run: python manage.py test --settings=perfumestore.test_settings
