@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Dior Sauvage",
+    "price": "120.00",
+    "stock": 2,
+    "image": "dior-sauvage.png"
+  },
+  {
+    "name": "Nautica Blue",
+    "price": "30.00",
+    "stock": 3,
+    "image": "nautica-blue.jpg"
+  },
+  {
+    "name": "Chanel No. 5",
+    "price": "300.00",
+    "stock": 3,
+    "image": "chanel-no-5.webp"
+  },
+  {
+    "name": "Creed Aventus",
+    "price": "200.00",
+    "stock": 7,
+    "image": "creed-aventus.webp"
+  },
+  {
+    "name": "Miss Dior",
+    "price": "180.00",
+    "stock": 22,
+    "image": "miss-dior.jpg"
+  },
+  {
+    "name": "J. 502",
+    "price": "30.00",
+    "stock": 37,
+    "image": "j-502.webp"
+  },
+  {
+    "name": "Gucci Flora",
+    "price": "180.00",
+    "stock": 27,
+    "image": "gucci-flora.jpeg"
+  },
+  {
+    "name": "Armani My Way",
+    "price": "30.00",
+    "stock": 10,
+    "image": "armani-my-way.webp"
+  }
+]

@@ -38,14 +38,34 @@ over values in `.env`.
 
 ```powershell
 .\venv\Scripts\python.exe manage.py migrate
+.\venv\Scripts\python.exe manage.py seed_perfumes
 .\venv\Scripts\python.exe manage.py createsuperuser
 .\venv\Scripts\python.exe manage.py runserver
 ```
 
 Open <http://127.0.0.1:8000/>. Add products in `/admin/`, or use `/add/` while logged
 in as staff. Register a customer account to browse `/products/` and try the cart.
-New installations start with no products or customer accounts. Uploaded images and
-database contents are local data and are excluded from Git.
+The seed command adds eight sample perfumes, including Armani My Way, with demo
+prices, stock counts, and product images. Register or create your own accounts;
+customer accounts are not included. Uploaded images and database contents remain
+local data and are excluded from Git.
+
+## Sample catalog
+
+The sample catalog is stored in `perfumes/sample_data/perfumes.json`, with its images
+in `perfumes/sample_data/images/`. These files are included in Git. After migrating
+a fresh database, load them with:
+
+```powershell
+.\venv\Scripts\python.exe manage.py seed_perfumes
+```
+
+The command copies bundled images into local media storage and skips products whose
+names already exist. Running it again does not duplicate products or reset prices,
+stock counts, or images you have edited. It does not export users or credentials.
+The sample prices and stock counts are a snapshot of this practice catalog, not
+current retail prices or live inventory. Future admin edits do not automatically
+change the JSON file in the repository.
 
 ## PostgreSQL
 
@@ -169,6 +189,7 @@ provides query inspection when needed.
 ```text
 perfumestore/       Django settings, routing, and test settings
 perfumes/          Model, forms, serializers, views, checkout service, and tests
+  sample_data/     Bundled sample catalog and images
 templates/         Storefront and admin templates
 static/            Images, cart JavaScript, and stylesheet
 .github/workflows/ Automated checks

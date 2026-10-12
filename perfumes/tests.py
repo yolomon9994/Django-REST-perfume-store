@@ -1,12 +1,17 @@
+import tempfile
 from decimal import Decimal
+from io import StringIO
+from pathlib import Path
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core import mail
+from django.core.management import call_command
 from django.db.models.query import QuerySet
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIClient
+from PIL import Image
 
 from .models import Perfume
 
@@ -221,3 +226,49 @@ class PurchaseTests(TestCase):
         self.assertEqual(response.status_code, 200)
         token = client.cookies['csrftoken'].value
         self.assertEqual(client.post(url, payload, format='json', HTTP_X_CSRFTOKEN=token).status_code, 200)
+
+
+class SampleCatalogTests(TestCase):
+    def setUp(self):
+        self.media = tempfile.TemporaryDirectory(prefix='perfume-test-media-')
+        self.addCleanup(self.media.cleanup)
+        settings_override = self.settings(MEDIA_ROOT=self.media.name)
+        settings_override.enable()
+        self.addCleanup(settings_override.disable)
+
+    def test_fresh_database_gets_eight_products_with_valid_images(self):
+        call_command('seed_perfumes', stdout=StringIO())
+        self.assertEqual(Perfume.objects.count(), 8)
+        armani = Perfume.objects.get(name='Armani My Way')
+        self.assertEqual(armani.price, Decimal('30.00'))
+        self.assertEqual(armani.stock, 10)
+        for perfume in Perfume.objects.all():
+            with self.subTest(perfume=perfume.name):
+                self.assertTrue(perfume.image)
+                self.assertTrue(perfume.image.storage.exists(perfume.image.name))
+                with perfume.image.open('rb') as image_file:
+                    with Image.open(image_file) as image:
+                        image.verify()
+        self.assertEqual(User.objects.count(), 0)
+
+    def test_repeat_preserves_edits_and_does_not_duplicate_products_or_files(self):
+        call_command('seed_perfumes', stdout=StringIO())
+        armani = Perfume.objects.get(name='Armani My Way')
+        original_id = armani.pk
+        armani.price = Decimal('99.00')
+        armani.stock = 0
+        armani.image.name = 'custom/armani.png'
+        armani.save()
+        files_before = sorted(str(path) for path in Path(self.media.name).rglob('*') if path.is_file())
+
+        output = StringIO()
+        call_command('seed_perfumes', stdout=output)
+        armani.refresh_from_db()
+        self.assertEqual(Perfume.objects.count(), 8)
+        self.assertEqual(armani.pk, original_id)
+        self.assertEqual(armani.price, Decimal('99.00'))
+        self.assertEqual(armani.stock, 0)
+        self.assertEqual(armani.image.name, 'custom/armani.png')
+        self.assertEqual(output.getvalue().strip(), 'Added 0 sample perfumes; skipped 8 existing perfumes.')
+        files_after = sorted(str(path) for path in Path(self.media.name).rglob('*') if path.is_file())
+        self.assertEqual(files_after, files_before)
