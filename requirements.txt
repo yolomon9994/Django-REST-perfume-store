@@ -1,0 +1,7 @@
+# Direct dependencies pinned to the versions used for the local checks.
+Django==5.2.18
+djangorestframework==3.18.3
+Pillow==12.3.0
+psycopg[binary]==3.3.6
+python-dotenv==1.2.4
+

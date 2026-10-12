@@ -1,0 +1,34 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Personal publishing walkthrough
+/docs/GITHUB.md
+
+# Python and virtual environments
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local data and generated assets
+*.sqlite3
+*.sqlite3-journal
+media/
+staticfiles/
+*.log
+
+# Editor, OS, and local tool files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Microsoft/
+.codex/
+
